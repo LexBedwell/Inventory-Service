@@ -13,7 +13,8 @@ class AdminController extends InjectedController {
       "request" -> JsObject(Seq(
           "url" -> JsString(fullRequestUrl),
           "server_received_time" -> JsString(ZonedDateTime.now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ"))))),
-      "response" -> JsObject(Seq("results" -> JsString("pong")))
+      "response" -> JsObject(Seq(
+          "results" -> JsString("pong")))
     ))
     Ok(response)
   }
