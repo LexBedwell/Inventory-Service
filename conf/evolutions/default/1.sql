@@ -2,7 +2,7 @@
 
 create table product_inventory (
   id                bigint not null,
-  qty               bigint,
+  qty               bigint not null,
   constraint pk_product_inventory primary key (id))
 ;
 
