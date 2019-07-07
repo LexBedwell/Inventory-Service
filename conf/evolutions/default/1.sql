@@ -1,5 +1,3 @@
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
-
 # --- !Ups
 
 create table product_inventory (
@@ -9,11 +7,6 @@ create table product_inventory (
 ;
 
 
-
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
-
 drop table if exists product_inventory;
-
-SET REFERENTIAL_INTEGRITY TRUE;
