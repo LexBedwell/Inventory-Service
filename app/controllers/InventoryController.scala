@@ -15,8 +15,7 @@ class InventoryController @Inject()(cc: MessagesControllerComponents,
                                    )(implicit ec: ExecutionContext)extends InjectedController {
 
   def productInventory(productId: String) = Action { request =>
-    val dbResponse = dao.fetchAllInventory
-    val dbResponseResult = Await.result(dbResponse, 5000 millis)
+    val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
     println(dbResponse)
     val response: JsValue = JsObject(Seq("productId" -> JsNumber(productId.toInt), "inventory" -> JsString("???")))
     Ok(response)
