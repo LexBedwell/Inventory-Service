@@ -12,4 +12,4 @@ GET     /assets/*file                     controllers.Assets.versioned(path="/pu
 GET     /admin/ping                       controllers.AdminController.ping
 
 # Product inventory
-GET     /inventory/:productId             @controllers.InventoryController.productInventory(productId: String)
+GET     /inventory/:productId             controllers.InventoryController.productInventory(productId: String)
