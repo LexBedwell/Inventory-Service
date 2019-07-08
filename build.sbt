@@ -14,7 +14,6 @@ libraryDependencies ++= Seq(
   jdbc,
   evolutions,
   "org.postgresql" % "postgresql" % "42.2.6",
-  "com.typesafe.akka" %% "akka-actor" % "2.5.19",
   "org.playframework.anorm" %% "anorm" % "2.6.2"
 )
 

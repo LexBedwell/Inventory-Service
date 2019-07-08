@@ -4,13 +4,11 @@ import play.api.mvc._
 import play.api.libs.json._
 import javax.inject.Inject
 import db.InventoryDao
-import scala.concurrent.{ExecutionContext, Await}
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import akka.actor._
 
 
-class InventoryController @Inject()(cc: MessagesControllerComponents, dao: InventoryDao, system: ActorSystem)(implicit ec: ExecutionContext)
-  extends InjectedController {
+class InventoryController @Inject()(dao: InventoryDao) extends InjectedController {
 
   def productInventory(productId: String) = Action { request =>
     val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
