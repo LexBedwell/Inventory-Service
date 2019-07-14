@@ -26,7 +26,21 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
 
   def updateProductInventory = Action(parse.json) { request =>
     val orderedInventoryMap = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
-    println(orderedInventoryMap)
+    val orderedInventoryTouple = orderedInventoryMap.map{ case (productId, orderQty) => {
+      val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
+      val inventoryQty = dbResponse.length match {
+        case 1 => dbResponse(0).qty
+        case _ => 0
+      }
+      println("productId is: " + productId)
+      println("inventory quantity is: " + inventoryQty)
+      val isInStock = inventoryQty match {
+        case inv if (inventoryQty - orderQty > 0) => true
+        case _ => false
+      }
+      println("is isInStock is: " + isInStock)
+    }}
+    //println(orderedInventoryMap)
     Ok("Success!")
   }
 
