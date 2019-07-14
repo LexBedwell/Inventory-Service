@@ -10,7 +10,7 @@ import scala.concurrent.duration._
 
 class InventoryController @Inject()(dao: InventoryDao) extends InjectedController {
 
-  def productInventory(productId: String) = Action { request =>
+  def getProductInventory(productId: String) = Action { request =>
     val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
     dbResponse.length match {
       case 1 => {
@@ -22,6 +22,12 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
         Ok(response)
       }
     }
+  }
+
+  def updateProductInventory = Action(parse.json) { request =>
+    val orderedInventoryMap = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
+    println(orderedInventoryMap)
+    Ok("Success!")
   }
 
 }
