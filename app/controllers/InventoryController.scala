@@ -46,7 +46,20 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
       new Tuple3(productId, orderQty, isInStock)
     }}
 
+    val processTransaction = orderedInventoryStatus.foldLeft(true)( (acc, invTuple) => {
+      acc match {
+        case false => false
+        case true => invTuple._3
+      }
+    })
+
+    println(processTransaction)
     println(orderedInventoryStatus)
+
+    //now do response = json object
+
+    //now do processTransaction match: true => update db and send response, false => don't update db and send response
+
     Ok("Success!")
   }
 
