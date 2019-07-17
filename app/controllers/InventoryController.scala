@@ -11,8 +11,11 @@ import scala.concurrent.duration._
 class InventoryController @Inject()(dao: InventoryDao) extends InjectedController {
 
   def getProductInventory(productId: String) = Action { request =>
+
     try {
+
       val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
+
       dbResponse.length match {
         case 1 => {
           val isInStock = dbResponse(0).qty match {
@@ -27,18 +30,24 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
           Ok(response)
         }
       }
+
     } catch {
+
       case e: Exception => {
-        println(s"ERROR: $e")
         val response: JsValue = JsObject(Seq("error" -> JsString(s"ERROR: $e")))
+        println(s"ERROR: $e")
         Ok(response)
       }
+
     }
   }
 
   def updateProductInventory = Action(parse.json) { request =>
+
     try {
+
       val orderedInventory = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
+
       val orderedInventoryStatus = orderedInventory.foldLeft(Map.empty[String, Boolean]){ case (acc, (k, v)) => {
         val dbResponse = Await.result(dao.fetchInventory(k), 5000 millis)
         val isInStock = dbResponse.length match {
@@ -50,26 +59,32 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
         }
         acc + (k -> isInStock)
       }}
+
       val processTransaction = orderedInventoryStatus.foldLeft(true) { case (acc, (k, v)) => {
         acc match {
           case false => false
           case true => v
         }
       }}
+
       processTransaction match {
         case true => {
           orderedInventory.foreach( {case (k,v) => dao.updateInventory(k.toInt, v)})
         }
         case _ =>
       }
+
       val response = Json.toJson(orderedInventoryStatus + ("processTransaction" -> processTransaction))
       Ok(response)
+
     } catch {
+
         case e: Exception => {
-          println(s"ERROR: $e")
           val response: JsValue = JsObject(Seq("error" -> JsString(s"ERROR: $e"), "processTransaction" -> JsBoolean(false)))
+          println(s"ERROR: $e")
           Ok(response)
         }
+        
     }
   }
   
