@@ -31,28 +31,27 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
 
     val orderedInventory = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
 
-    val orderedInventoryStatus = orderedInventory.map{ case (productId, orderQty) => {
+    val orderedInventoryStatus = orderedInventory.foldLeft(Map.empty[String, Boolean]){ case (acc, (k, v)) => {
 
-      val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
+      val dbResponse = Await.result(dao.fetchInventory(k), 5000 millis)
 
       val isInStock = dbResponse.length match {
         case 1 => dbResponse(0).qty match {
-          case inv if inv - orderQty > 0 => true
+          case inv if inv - v > 0 => true
           case _ => false
           }
         case _ => false
       }
-      Map(productId -> isInStock)
+      acc + (k -> isInStock)
     }}
 
-    val processTransaction = orderedInventoryStatus.foldLeft(true)( (acc, invMap) => {
+    val processTransaction = orderedInventoryStatus.foldLeft(true) { case (acc, (k, v)) => {
       acc match {
         case false => false
-        case true => invMap(invMap.keys.head)
+        case true => v
       }
-    })
+    }}
 
-//    now do processTransaction match: true => update db and send response, false => don't update db and send response
 //    processTransaction match {
 //      case true => {
 //        orderedInventory.foreach( ***updateDB***)
@@ -60,11 +59,7 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
 //      case _ =>
 //    }
 
-    val responseMap = orderedInventoryStatus.foldLeft(Map.empty[String, Boolean]) ( (acc, invMap) => {
-      acc + (invMap.keys.head -> invMap(invMap.keys.head))
-    })
-
-    val response = Json.toJson(responseMap + ("processTransaction" -> processTransaction))
+    val response = Json.toJson(orderedInventoryStatus + ("processTransaction" -> processTransaction))
 
     Ok(response)
 
