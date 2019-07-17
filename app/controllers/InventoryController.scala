@@ -6,6 +6,7 @@ import javax.inject.Inject
 import db.InventoryDao
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.parsing.json.JSONObject
 
 
 class InventoryController @Inject()(dao: InventoryDao) extends InjectedController {
@@ -53,14 +54,28 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
       }
     })
 
-    println(processTransaction)
-    println(orderedInventoryStatus)
+    println("process transaction is: " + processTransaction)
 
-    //now do response = json object
+//    now do processTransaction match: true => update db and send response, false => don't update db and send response
+//    processTransaction match {
+//      case true => {
+//        orderedInventory.foreach( ***updateDB***)
+//      }
+//      case _ =>
+//    }
 
-    //now do processTransaction match: true => update db and send response, false => don't update db and send response
+    val responseMap = orderedInventoryStatus.foldLeft(Map.empty[String, Boolean]) ( (acc, invTuple) => {
+      acc + (invTuple._1 -> invTuple._3)
+    })
 
-    Ok("Success!")
+    val response = Json.toJson(responseMap)
+
+    Ok(response)
+
+    //println(orderedInventoryStatus)
+    //val orderedInventoryMap = orderedInventoryStatus.map{ case(key, v1, v2) => {
+    //Map(key -> v2)
+    //}}
   }
 
 }
