@@ -5,7 +5,7 @@ insert into product_inventory (id, qty) values (2, 22);
 insert into product_inventory (id, qty) values (3, 33);
 insert into product_inventory (id, qty) values (4, 44);
 insert into product_inventory (id, qty) values (5, 55);
-insert into product_inventory (id, qty) values (6, 66);
+insert into product_inventory (id, qty) values (6, 0);
 
 
 # --- !Downs

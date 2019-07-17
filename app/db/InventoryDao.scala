@@ -34,4 +34,10 @@ class InventoryDao @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext
     }
   }
 
+  def updateInventory(id: Int, qty: Int) = {
+    db.withConnection { implicit c =>
+      SQL"update product_inventory set qty = qty - $qty where id = $id".execute();
+    }
+  }
+
 }

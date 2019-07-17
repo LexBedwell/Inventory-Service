@@ -16,7 +16,11 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
 
     dbResponse.length match {
       case 1 => {
-        val response: JsValue = JsObject(Seq("productId" -> JsNumber(dbResponse(0).id), "inventory" -> JsNumber(dbResponse(0).qty)))
+        val isInStock = dbResponse(0).qty match {
+          case inv if inv > 0 => true
+          case _ => false
+        }
+        val response: JsValue = JsObject(Seq(productId -> JsBoolean(isInStock)))
         Ok(response)
       }
       case _ => {
@@ -37,7 +41,7 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
 
       val isInStock = dbResponse.length match {
         case 1 => dbResponse(0).qty match {
-          case inv if inv - v > 0 => true
+          case inv if inv - v >= 0 => true
           case _ => false
           }
         case _ => false
@@ -52,12 +56,12 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
       }
     }}
 
-//    processTransaction match {
-//      case true => {
-//        orderedInventory.foreach( ***updateDB***)
-//      }
-//      case _ =>
-//    }
+    processTransaction match {
+      case true => {
+        orderedInventory.foreach( {case (k,v) => dao.updateInventory(k.toInt, v)})
+      }
+      case _ =>
+    }
 
     val response = Json.toJson(orderedInventoryStatus + ("processTransaction" -> processTransaction))
 
