@@ -32,11 +32,13 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
       }
 
     } catch {
+
       case e: Exception => {
         val response: JsValue = JsObject(Seq("error" -> JsString(s"ERROR: $e")))
         println(s"ERROR: $e")
         Ok(response)
       }
+
     }
   }
 
@@ -76,11 +78,13 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
       Ok(response)
 
     } catch {
+
       case e: Exception => {
         val response: JsValue = JsObject(Seq("error" -> JsString(s"ERROR: $e"), "processTransaction" -> JsBoolean(false)))
         println(s"ERROR: $e")
         Ok(response)
       }
+
     }
   }
   
