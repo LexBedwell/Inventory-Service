@@ -22,12 +22,6 @@ class InventoryDao @Inject()(dbapi: DBApi)(implicit ec: DatabaseExecutionContext
     }
   }
 
-//  def fetchAllInventory: Future[Seq[InventoryLine]] = Future {
-//    db.withConnection { implicit c =>
-//      SQL("select * from product_inventory").as(inventoryRowParser.*)
-//    }
-//  }
-
   def fetchInventory(id: String): Future[Seq[InventoryLine]] = Future {
     db.withConnection { implicit c =>
       SQL(s"select * from product_inventory where id = $id").as(inventoryRowParser.*)
