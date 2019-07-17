@@ -11,10 +11,16 @@ import scala.concurrent.duration._
 class InventoryController @Inject()(dao: InventoryDao) extends InjectedController {
 
   def getProductInventory(productId: String) = Action { request =>
+
     val dbResponse = Await.result(dao.fetchInventory(productId), 5000 millis)
+
     dbResponse.length match {
       case 1 => {
-        val response: JsValue = JsObject(Seq("productId" -> JsNumber(dbResponse(0).id), "inventory" -> JsNumber(dbResponse(0).qty)))
+        val isInStock = dbResponse(0).qty match {
+          case inv if inv > 0 => true
+          case _ => false
+        }
+        val response: JsValue = JsObject(Seq(productId -> JsBoolean(isInStock)))
         Ok(response)
       }
       case _ => {
@@ -22,12 +28,45 @@ class InventoryController @Inject()(dao: InventoryDao) extends InjectedControlle
         Ok(response)
       }
     }
+
   }
 
   def updateProductInventory = Action(parse.json) { request =>
-    val orderedInventoryMap = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
-    println(orderedInventoryMap)
-    Ok("Success!")
+
+    val orderedInventory = request.body.validate[Map[String,Int]].getOrElse(Map[String, Int]())
+
+    val orderedInventoryStatus = orderedInventory.foldLeft(Map.empty[String, Boolean]){ case (acc, (k, v)) => {
+
+      val dbResponse = Await.result(dao.fetchInventory(k), 5000 millis)
+
+      val isInStock = dbResponse.length match {
+        case 1 => dbResponse(0).qty match {
+          case inv if inv - v >= 0 => true
+          case _ => false
+          }
+        case _ => false
+      }
+      acc + (k -> isInStock)
+    }}
+
+    val processTransaction = orderedInventoryStatus.foldLeft(true) { case (acc, (k, v)) => {
+      acc match {
+        case false => false
+        case true => v
+      }
+    }}
+
+    processTransaction match {
+      case true => {
+        orderedInventory.foreach( {case (k,v) => dao.updateInventory(k.toInt, v)})
+      }
+      case _ =>
+    }
+
+    val response = Json.toJson(orderedInventoryStatus + ("processTransaction" -> processTransaction))
+
+    Ok(response)
+
   }
 
 }
