@@ -1,4 +1,4 @@
-name := """inventoryService"""
+name := """inventory-service"""
 organization := "com.example"
 
 version := "1.0-SNAPSHOT"
