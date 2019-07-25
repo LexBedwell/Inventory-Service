@@ -3,6 +3,9 @@
 Service that stores and updates product inventory quantities for [BuyAndCell](https://github.com/LexBedwell/BuyAndCell).
 Utilizes a Scala Play Framework and PostgreSQL database.
 
+## Commands
+- `sbt start` - start service
+
 ## Routes
 
 | Method | Route | Call Definition | Description
