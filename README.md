@@ -9,4 +9,4 @@ Utilizes a Scala Play Framework and PostgreSQL database.
 | ------ | ----- | ----- | -----------
 | GET | /admin/ping | controllers.AdminController.ping | Ping service
 | GET | /inventory/$productId | controllers.InventoryController.getProductInventory | Check if product is in-stock
-| PUT | /inventory | controllers.InventoryController.updateProductInventory | Check if there is enough inventory to fill an order, and if so deduct order quantities from product inventory
+| PUT | /inventory | controllers.InventoryController.updateProductInventory | Deduct ordered quantities from product inventory
