@@ -5,8 +5,8 @@ Utilizes a Scala Play Framework and PostgreSQL database.
 
 ## Routes
 
-| Method | Route | Class | Description
+| Method | Route | Call Definition | Description
 | ------ | ----- | ----- | -----------
 | GET | /admin/ping | controllers.AdminController.ping | Ping service
 | GET | /inventory/$productId | controllers.InventoryController.getProductInventory | Check if product is in-stock
-| PUT | /inventory | controllers.InventoryController.getProductInventory | Check if there is enough inventory to fill an order
+| PUT | /inventory | controllers.InventoryController.updateProductInventory | Check if there is enough inventory to fill an order, and if so deduct order quantities from product inventory
