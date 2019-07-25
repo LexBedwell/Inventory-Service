@@ -9,4 +9,4 @@ Utilizes a Scala Play Framework and PostgreSQL database.
 | ------ | ----- | ----- | -----------
 | GET | /admin/ping | controllers.AdminController.ping | Ping Service
 | GET | /inventory/$productId | controllers.InventoryController.getProductInventory | Check if product is in-stock
-| GET | /inventory | controllers.InventoryController.getProductInventory | Check if there is sufficient inventory to fill an order
+| GET | /inventory | controllers.InventoryController.getProductInventory | Check if there is inventory to fill an order
